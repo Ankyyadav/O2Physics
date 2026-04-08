@@ -370,8 +370,8 @@ struct DQEventQvector {
         if (amp > 0.f) {
           S12C += amp * amp;
         }
-      }  
-    }      
+      }
+    }
     VarManager::fgValues[VarManager::kS11C] = S11C;
     VarManager::fgValues[VarManager::kS12C] = S12C;
     VarManager::FillQVectorFromCentralFW(collision);
@@ -382,7 +382,7 @@ struct DQEventQvector {
         fHistMan->FillHistClass("Event_AfterCuts_centralFW", VarManager::fgValues);
       }
     }
-    
+
     if (fEventCut->IsSelected(VarManager::fgValues)) {
       eventQvectorCentr(collision.qvecFT0ARe(), collision.qvecFT0AIm(), collision.qvecFT0CRe(), collision.qvecFT0CIm(), collision.qvecFT0MRe(), collision.qvecFT0MIm(), collision.qvecFV0ARe(), collision.qvecFV0AIm(), collision.qvecTPCposRe(), collision.qvecTPCposIm(), collision.qvecTPCnegRe(), collision.qvecTPCnegIm(),
                         collision.sumAmplFT0A(), collision.sumAmplFT0C(), collision.sumAmplFT0M(), collision.sumAmplFV0A(), collision.nTrkTPCpos(), collision.nTrkTPCneg());
