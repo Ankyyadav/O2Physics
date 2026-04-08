@@ -359,6 +359,22 @@ struct DQEventQvector {
     VarManager::ResetValues(0, VarManager::kNVars);
     VarManager::FillEvent<TEventFillMap>(collision);
 
+    float S11C = collision.sumAmplFT0C();
+    float S12C = 0.f;
+
+    // Compute sum of squares of amplitudes from FT0C for flow analysis
+    if (collision.has_foundFT0()) {
+      auto ft0 = collision.foundFT0();
+      auto const& ampC = ft0.amplitudeC();
+      for (auto amp : ampC) {
+        if (amp > 0.f) {
+          S12C += amp * amp;
+        }
+      }  
+    }      
+    VarManager::fgValues[VarManager::kS11C] = S11C;
+    VarManager::fgValues[VarManager::kS12C] = S12C;
+    VarManager::FillQVectorFromCentralFW(collision);
 
     if (fConfigQA) {
       fHistMan->FillHistClass("Event_BeforeCuts_centralFW", VarManager::fgValues);
@@ -366,29 +382,13 @@ struct DQEventQvector {
         fHistMan->FillHistClass("Event_AfterCuts_centralFW", VarManager::fgValues);
       }
     }
-
+    
     if (fEventCut->IsSelected(VarManager::fgValues)) {
-      float S11C = collision.sumAmplFT0C();
-      float S12C = 0.f;
-
-      if (collision.has_foundFT0()) {
-        auto ft0 = collision.foundFT0();
-        auto const& ampC = ft0.amplitudeC();
-        for (auto amp : ampC) {
-          if (amp > 0.f) {
-            S12C += amp * amp;
-          }
-        }  
-      }      
-      VarManager::fgValues[VarManager::kS11C] = S11C;
-      VarManager::fgValues[VarManager::kS12C] = S12C;
-      VarManager::FillQVectorFromCentralFW(collision);
-
       eventQvectorCentr(collision.qvecFT0ARe(), collision.qvecFT0AIm(), collision.qvecFT0CRe(), collision.qvecFT0CIm(), collision.qvecFT0MRe(), collision.qvecFT0MIm(), collision.qvecFV0ARe(), collision.qvecFV0AIm(), collision.qvecTPCposRe(), collision.qvecTPCposIm(), collision.qvecTPCnegRe(), collision.qvecTPCnegIm(),
                         collision.sumAmplFT0A(), collision.sumAmplFT0C(), collision.sumAmplFT0M(), collision.sumAmplFV0A(), collision.nTrkTPCpos(), collision.nTrkTPCneg());
       eventQvectorCentrExtra(collision.qvecTPCallRe(), collision.qvecTPCallIm(), collision.nTrkTPCall());
       eventRefFlow(VarManager::fgValues[VarManager::kM11REF], VarManager::fgValues[VarManager::kM11REFetagap], VarManager::fgValues[VarManager::kM1111REF], VarManager::fgValues[VarManager::kCORR2REF], VarManager::fgValues[VarManager::kCORR2REFetagap], VarManager::fgValues[VarManager::kCORR4REF], VarManager::fgValues[VarManager::kCentFT0C]);
-      eventQvectorExtra(0.f, 0.f, 0.f, 0.f, S11C, S12C, 0.f, 0.f);
+      eventQvectorExtra(-999, -999, -999, -999, S11C, S12C, -999, -999);
     }
   }
 
